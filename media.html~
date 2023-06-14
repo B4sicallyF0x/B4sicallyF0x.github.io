@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>B4sicallyF0x Website</title>
+	<link rel="canonical" href="http://b4sicallyf0x.me/media.html" />
+	<link async rel="stylesheet" href="style.css">
+	<iframe id="navbar" src="navbar.html"></iframe>
+</head>
+<body>
+	<center>
+		<div id="body">
+			<img src="avatar.png" style="border-radius: 50%; width:256px" /><br><br>
+			<div style="padding-bottom: 0px">
+			</div>
+			<a href="https://github.com/B4sicallyF0x">
+				<user>
+					<img id="avatar"
+						src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLDvv2ijoL0v9aPkHz99nGIE76EvFig_JqkA&usqp=CAU">
+					<name>B4sicallyF0x</name>
+				</user>
+			</a>
+			<!--
+			<a href="https://twitch.tv/b4sicallyf0x">
+				<user>
+					<img id="avatar"
+						src="https://cdn3.iconfinder.com/data/icons/popular-services-brands-vol-2/512/twitch-512.png">
+					<name>B4sicallyF0x</name>
+				</user>
+			</a>-->
+			<a href="https://twitter.com/@mateoalonnso_">
+				<user>
+					<img id="avatar"
+						src="data/icons/popular-services-brands/512/twitter-512.png">
+					<name>@mateoalonnso_</name>
+				</user>
+			</a>
+			<a href="https://discord.gg/EfwEaqJUAt">
+				<user>
+					<img id="avatar"
+						src="20180421/fsq/kisspng-discord-computer-icons-logo-user-5adb6eb470b210.1996480115243301644616.jpg">
+					<name>My Discord</name>
+				</user>
+			</a>
+			<a href="https://www.reddit.com/user/P607">
+				<user>
+					<img id="avatar" src="images/I/418PuxYS63L.png">
+					<name>My Reddit</name>
+				</user>
+			</a>
+			<!--<a href="http://streamlabs.com/b4sicallyf0x">
+				<user>
+					<img id="avatar" src="https://media.influencerupdate.biz/2018/1/86110/streamlabs-r225x.png">
+					<name>B4sicallyF0x</name>
+				</user>
+			</a>
+			<a href="https://streamelements.com/b4sicallyf0x/tip">
+				<user>
+					<img id="avatar"
+						src="https://blobscdn.gitbook.com/v0/b/gitbook-28427.appspot.com/o/spaces%2F-LCAOp7LOyVznNeRT4JJ%2Favatar.png?generation=1525978454713713&alt=media">
+					<name>dj_spacedash</name>
+				</user>
+			</a> -->
+			<a href="https://paypal.me/mateoalonnso">
+				<user>
+					<img id="avatar"
+						src="iconfiles/png/512/circle-money-pay-paypal-icon-1320086083664101037.png">
+					<name>B4sicallyF0x</name>
+				</user>
+			</a>
+		</div>
+	</center>
+	<iframe id="footer" src="footer.html" />
+</body>
