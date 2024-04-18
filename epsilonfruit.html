@@ -1,0 +1,717 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Malware Analysis: Epsilon Fruit</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="b05b6ef0-3b42-4954-9530-8c0bf9c47c4f" class="page sans"><header><h1 class="page-title">Malware Analysis: Epsilon Fruit</h1><p class="page-description"></p></header><div class="page-body"><p id="b8f49dd2-9e34-41da-97c7-40322810e104" class="">by B4sicallyF0x</p><p id="3557443c-aa00-4550-ab8b-047a4828fdfc" class="">
+</p><p id="8e49e6b6-0cfa-46e3-a6a3-b75504d21709" class="">This malware is distributed through Discord. Let&#x27;s see how it works.</p><p id="166519d2-0b60-4484-b2d6-45dbaf9c9a1a" class=""><br/>First, a target is searched with the following message. Normally, they send this message to the entire list of friends of the accounts they are hacking<br/></p><figure id="444aebf8-dc54-404f-a40f-7782b260fef2" class="image"><a href="epsilonfruit/Untitled.png"><img style="width:720px" src="epsilonfruit/Untitled.png"/></a></figure><p id="f48ad7aa-5e8d-4e7b-b803-1fe4fc0065b3" class="">
+</p><p id="e3a7e9b1-7b0b-4656-b3ef-48259d29e14d" class="">They tend to be quite rude if you say no.</p><p id="0a398ba4-692d-4acf-9790-610b73744bc4" class="">
+</p><figure id="4e3dcb8a-3e77-49fb-a856-1d4af8f5d976" class="image"><a href="epsilonfruit/Untitled.jpeg"><img style="width:708px" src="epsilonfruit/Untitled.jpeg"/></a></figure><p id="f87e3629-b1fa-4c42-affe-eb41a7826b8c" class="">
+</p><p id="3637dd6d-2c0d-4f7b-8e6b-c2ace31f955a" class="">If you say yes, they move on to the next stage.</p><figure id="bf49c560-f003-4e5d-94a4-49d59362700f" class="image"><a href="epsilonfruit/Untitled%201.png"><img style="width:768px" src="epsilonfruit/Untitled%201.png"/></a></figure><p id="e7cd9832-84d6-4e7b-b56b-a09d59a83405" class="">
+</p><p id="9da8403c-26a9-4320-8283-e40cd711daea" class="">Now, let&#x27;s see and analyze the website they send us:</p><p id="ce7faa8f-7ddc-4d38-96c3-3e4efbec80d4" class="">
+</p><figure id="8c639905-c70a-414b-bec6-e5c87e6fc8a3" class="image"><a href="epsilonfruit/Untitled%202.png"><img style="width:1889px" src="epsilonfruit/Untitled%202.png"/></a></figure><p id="9fcb54ca-6a80-4899-81bb-5501f94187aa" class="">It looks like the website of a real game, but for example, we can notice that all the buttons and links lead to the same place</p><figure id="dce11406-73f1-4cb7-ab5b-c5e36eb60d39" class="image"><a href="epsilonfruit/Untitled%203.png"><img style="width:641px" src="epsilonfruit/Untitled%203.png"/></a></figure><p id="2cea629b-cd4e-4290-99af-b3ca5fec63c5" class="">It&#x27;s a little strange that the game is hosted on Discord&#x27;s CDN, right? We&#x27;ll talk about that later.</p><p id="749fc6b6-bba8-41fd-a6bb-bfb94612bcc1" class="">
+</p><p id="6428caee-7b50-4d7a-b944-279cba52141a" class="">
+</p><p id="2a53eab8-f208-40de-bb4c-da500fa9e3b9" class="">We can also realize that the game images are taken from another game, with a simple reverse image search</p><figure id="4414df5a-1edd-46bd-91c5-121672bebd9c" class="image"><a href="epsilonfruit/Untitled%204.png"><img style="width:1633px" src="epsilonfruit/Untitled%204.png"/></a></figure><p id="413d5d1d-3c2c-4947-8985-05667366828d" class="">
+</p><p id="0ce71beb-1c78-4454-80ed-90df150cb02c" class="">Now, let&#x27;s analyze the supposed game, so let&#x27;s download it</p><figure id="60c7b9e0-edde-4f12-985e-3c8502d84b32" class="image"><a href="epsilonfruit/Untitled%205.png"><img style="width:344px" src="epsilonfruit/Untitled%205.png"/></a></figure><figure id="d0f0822d-92dc-49bc-b91f-44509c8c0c3f" class="image"><a href="epsilonfruit/Untitled%206.png"><img style="width:145px" src="epsilonfruit/Untitled%206.png"/></a></figure><p id="66f5d4bd-7b93-40ed-84b2-14d8f34d649f" class="">
+</p><p id="5ea27b62-dccd-4a92-9c37-843649cc1e28" class="">It&#x27;s pretty light for a game, let&#x27;s open it</p><figure id="129d09ef-fdb3-4694-a87b-a480edb68939" class="image"><a href="epsilonfruit/Untitled%207.png"><img style="width:558px" src="epsilonfruit/Untitled%207.png"/></a></figure><p id="34feaf58-eaab-4ef3-ab33-e848583e1943" class="">It is password protected. It&#x27;s not strange? It&#x27;s a simple game! </p><p id="204fead4-9dfa-449c-8bc0-91a28f683625" class="">We ask for the password</p><p id="b15e781b-e920-4e0d-a1f8-96d57dc9a599" class="">
+</p><figure id="c6867fc0-2cac-44a2-9feb-922b8f7a488b" class="image"><a href="epsilonfruit/Untitled%208.png"><img style="width:305px" src="epsilonfruit/Untitled%208.png"/></a></figure><p id="76be7e5e-3d6d-4402-88fd-5f9e52b15737" class="">
+</p><p id="f9f05ab6-f65e-4d34-b254-149d99dbbe22" class="">Now that we have the file, let&#x27;s inspect it. The first thing we can notice is that the antivirus does not detect it</p><figure id="35f8a4ae-2699-4e99-a3f4-0bdf051b3c1e" class="image"><a href="epsilonfruit/Untitled%209.png"><img style="width:336px" src="epsilonfruit/Untitled%209.png"/></a></figure><figure id="c5f91da6-3900-427f-ba7e-5a0133b22d95" class="image"><a href="epsilonfruit/Untitled%2010.png"><img style="width:708px" src="epsilonfruit/Untitled%2010.png"/></a></figure><p id="ec5e1452-16f0-496b-8ab2-81f42ce65d9b" class="">
+</p><p id="696b0c6a-e543-4d25-b821-4664b00020f8" class="">So is it safe? Not really</p><p id="e8c0ae30-3b9e-45f3-864b-7cab3434e554" class="">Let&#x27;s run it and see what happens</p><figure id="0fe9cf12-9cfb-4335-9d06-7fdafb230282" class="image"><a href="epsilonfruit/e163f633-0df6-467b-a3ea-faacc21921a7.png"><img style="width:708px" src="epsilonfruit/e163f633-0df6-467b-a3ea-faacc21921a7.png"/></a></figure><p id="7021fffb-e3a3-4ebd-b7e9-41a87b70d269" class="">
+</p><p id="0ab72063-07f6-4a77-b09c-7cea30f1a8ed" class="">Well... it turns out that nothing happens. But if we check Process Explorer, we can see that the program has spawned PowerShell</p><p id="6cbe1afc-9046-4ade-9434-276c9b9385a9" class="">At first glance, for the user, absolutely nothing happens. </p><p id="41883b30-8053-41ed-bd6a-bae60e3ca03e" class="">But just by opening the file, it already has all your data.</p><p id="e0aa8c1f-b589-43c9-bac5-f63c6fdb58cc" class="">Here we have a screenshot of the information he obtained from us, provided by my friend Ivy, since the scammer sent it to him</p><figure id="fd0f02a2-fcb4-4fd1-b5d8-18eacc06288a" class="image"><a href="epsilonfruit/Untitled%201.jpeg"><img style="width:536px" src="epsilonfruit/Untitled%201.jpeg"/></a></figure><p id="712d39c5-8295-444b-9ea1-101c2b8a6f3d" class="">
+</p><p id="53308646-b25c-41cc-9cc1-1f8267a35695" class="">As we can see, it obtained system information, cookies, and history, as well as saved passwords.<br/>He also obtained the IP address, and managed to infect the Discord application.<br/></p><p id="5c488e03-60a8-457b-a408-6af8362e3811" class="">He got the Discord account token, and also some 2-factor recovery codes, although we are not too sure, since he managed to change the password and email without any problem</p><p id="038f29d1-8a65-4632-bc6a-bb78c28089ca" class="">
+</p><p id="7e2c1c53-e07b-4d7b-86f7-d7342391ec2a" class="">However, it appears that the virus did not establish itself at startup.</p><figure id="d5d04b83-0a57-4f3e-9876-7fcd342dd66f" class="image"><a href="epsilonfruit/Untitled%2011.png"><img style="width:614px" src="epsilonfruit/Untitled%2011.png"/></a></figure><p id="c648f25e-dfd1-46ed-bf73-107b01aeb5a8" class="">
+</p><p id="fa5596d5-18f4-45f4-baf3-b1db12135bd3" class="">
+</p><p id="85d7ca12-810c-44ca-96a2-13473de8785c" class="">…or so I thought</p><figure id="b6495af0-82fe-4d27-a6e8-4a072149b436" class="image"><a href="epsilonfruit/Untitled%2012.png"><img style="width:284px" src="epsilonfruit/Untitled%2012.png"/></a></figure><p id="b485ffc5-c5c0-4626-b156-d0561ec36ea3" class="">
+</p><p id="e50f418b-89b7-439c-862b-cbf2ee2e463a" class="">Another one? Let&#x27;s run it too</p><figure id="b09ab6c6-0ab1-48ab-b13d-fd2e6330fddf" class="image"><a href="epsilonfruit/Untitled%2013.png"><img style="width:288px" src="epsilonfruit/Untitled%2013.png"/></a></figure><p id="f38d5098-8b5f-4e2d-a23a-b771a1db5f30" class="">This one looks different</p><figure id="1b452f77-c20c-406c-9dd5-9ca27be4746e" class="image"><a href="epsilonfruit/Untitled%2014.png"><img style="width:700px" src="epsilonfruit/Untitled%2014.png"/></a></figure><p id="756c753a-c5d4-42a3-899c-5a15c4fe3539" class="">
+</p><p id="5c21e62c-973b-4343-bd37-81ad684f6be2" class="">But this other one seems to run more processes. And there is one in particular that attracts attention.</p><figure id="46b870c6-8c0c-413d-81dc-970b61ecb2a6" class="image"><a href="epsilonfruit/Untitled%2015.png"><img style="width:384px" src="epsilonfruit/Untitled%2015.png"/></a></figure><p id="01b94f6f-34bb-4a56-981a-1975b8167117" class="">ScreenCapture? What is it doing? Obviously, as its name indicates, it is taking screenshots of our computer.</p><p id="42760e66-168b-4d3a-80d8-3ccd0b215711" class="">In fact, if we go to the temporary folder on our computer, we can find the screenshots</p><figure id="53ca3c55-6349-4cfc-92db-1dd78c29b405" class="image"><a href="epsilonfruit/Untitled%2016.png"><img style="width:1039px" src="epsilonfruit/Untitled%2016.png"/></a></figure><p id="c8b9a5c3-b68c-4ca0-9bd6-0ead67ab001d" class="">
+</p><p id="b27f5cf9-ee60-4dc0-ab35-8a5e5fa7a745" class="">And this time, with this file, it is set to Windows startup</p><p id="9fd6da39-eb9b-43c6-a73d-34669cd0c90f" class="">
+</p><figure id="8eeb9906-a722-4178-9804-727b193a49ca" class="image"><a href="epsilonfruit/Untitled%2017.png"><img style="width:595px" src="epsilonfruit/Untitled%2017.png"/></a></figure><figure id="40083a78-0bf8-41e2-a90e-e917798e476c" class="image"><a href="epsilonfruit/Untitled%2018.png"><img style="width:708px" src="epsilonfruit/Untitled%2018.png"/></a></figure><p id="9cba7178-c37f-483c-b66b-0ac117a23dfd" class="">
+</p><p id="44d3456e-db76-4a3e-b3e7-d78c03b6f242" class="">WindowsUpdater is a video game? LOL 🫠</p><p id="4191c7c9-0c03-44b3-ae70-5afc14f8ab4f" class="">
+</p><p id="527d6d90-3e9a-4fcc-98b3-cc9c5c1948b5" class="">But wait a moment. Where does all this information go?</p><p id="150884d5-d586-4c1f-8d04-bb736d240ba6" class="">Let&#x27;s see it. We will use the Procmon tool (Process Monitor)</p><figure id="cc27d5ef-ead8-4ac8-b500-5a82066854ec" class="image"><a href="epsilonfruit/Untitled%2019.png"><img style="width:720px" src="epsilonfruit/Untitled%2019.png"/></a></figure><p id="8f53d7bf-2f81-4150-a703-59c6ece156a9" class="">As we can see, the program is sending and receiving TCP requests to the IP “188.114.97.7”</p><p id="330a7ea4-cac8-4662-84a1-8c8d28fc7043" class="">
+</p><figure id="56cb1490-daa1-4cb4-9f99-61361026f40f" class="image"><a href="epsilonfruit/Untitled%2020.png"><img style="width:432px" src="epsilonfruit/Untitled%2020.png"/></a></figure><p id="3d1cc77c-80bc-44f8-a32c-5dcb6600d98b" class="">
+</p><p id="c84ee78b-6465-44c9-a8dc-5e2f3ea2304d" class="">This IP belongs to Cloudflare, so likely they’re using a server to receive all the data</p><p id="670de906-86ef-4a40-b19a-23fd54a8f852" class="">I did some research into the code, and I managed to get the following domain</p><p id="251b56a0-bd3a-4960-94cb-ba0a80dec3c6" class=""><strong>vchaonlyone.com</strong></p><p id="b56f0b96-3751-4062-a849-9046d89e73fa" class="">If we make a nsklookup in the domain, we get the following:</p><figure id="e85a1f90-6091-4b7e-8fee-6a0a78058e43" class="image"><a href="epsilonfruit/Untitled%2021.png"><img style="width:432px" src="epsilonfruit/Untitled%2021.png"/></a></figure><p id="c316415b-47df-40d3-93e3-22979211a981" class="">And we can verify that the IPs match the previous ones. So we can deduce that it is sending all the data to a server.</p><p id="a63bce82-10a5-46c4-8f71-36391496afcf" class="">
+</p><p id="100ade96-69c0-4728-81be-14240a5f7fae" class="">Why is this virus not detected by the antivirus? Because it is made with electron, which is a framework for making executable web applications. It&#x27;s basically how discord works, that&#x27;s why it goes unnoticed. I&#x27;m still researching how it works.</p><p id="e27f1dd8-ab96-4942-959e-67bab4157af7" class="">
+</p><p id="fe5006f4-2c4f-4652-9f09-01a6e1c52ee6" class="">
+</p><p id="93155e37-b088-4b88-97fe-567b8f9a4741" class="">Although there is much more information that we can get, we will leave it here. Now the question is, what do they do with the accounts?</p><p id="1fe7a26c-375a-496c-9fd5-909647b645bf" class="">
+</p><p id="1208c238-e0a1-47d3-bc3b-37d7422e9696" class="">If we look at the previous screenshot, we notice that it said something about selling the information in a channel</p><figure id="e34473cb-b4ed-4adb-8b48-5c15522e5fb3" class="image"><a href="epsilonfruit/Untitled%2022.png"><img style="width:163px" src="epsilonfruit/Untitled%2022.png"/></a></figure><figure id="77edd8f3-8e43-450e-a7ce-57eea2236049" class="image"><a href="epsilonfruit/Untitled%2023.png"><img style="width:306px" src="epsilonfruit/Untitled%2023.png"/></a></figure><p id="46b5eb93-b30e-4ef0-a99d-b041a719f3c5" class="">With a simple lookup on Google, we manage to see the channel</p><figure id="2761fd4a-d3a3-41b9-866f-814f123a6a28" class="image"><a href="epsilonfruit/Untitled%2024.png"><img style="width:327px" src="epsilonfruit/Untitled%2024.png"/></a></figure><p id="20044e3f-12c3-4aa8-b1e0-8a8f52c7fcc3" class="">
+</p><p id="6fdc412f-b817-4d0e-88fa-74bbb7594fa8" class="">And also, our recently stolen account, for sale</p><figure id="1525b98a-ce7d-4329-a75e-5f20349baa2e" class="image"><a href="epsilonfruit/Untitled%2025.png"><img style="width:457px" src="epsilonfruit/Untitled%2025.png"/></a></figure><p id="98839c29-d859-4404-8c9b-be43da928887" class="">
+</p><p id="0fa07287-83f5-4b0a-8744-f54cded93eff" class="">Which... is sold? Who bought it? And so fast?</p><p id="fec4d84f-f1bf-48e3-9db7-28f9a570f15e" class="">If we go to the voucher channel, we can see the buyer&#x27;s recent forwarded message</p><figure id="3d0eea0c-61ff-4dc6-985e-71fcb9835975" class="image"><a href="epsilonfruit/Untitled%2026.png"><img style="width:381px" src="epsilonfruit/Untitled%2026.png"/></a></figure><p id="e0ba2308-e698-4a1a-bd6d-d7bba10ebc68" class="">And, if we contact him…</p><figure id="720506d1-ca40-422b-8084-02c24e71c033" class="image"><a href="epsilonfruit/Untitled%202.jpeg"><img style="width:672px" src="epsilonfruit/Untitled%202.jpeg"/></a></figure><p id="dd59f0dc-ab1c-4086-95da-0971099ce6f9" class="">
+</p><p id="a486e817-2805-4857-9eba-ce979bf208e4" class="">250$?!? Personally I don&#x27;t believe it, but it could be. Furthermore, he said that he bought it with LTC (litecoin, a type of cryptocurrency)</p><p id="641e32be-bd44-4259-853c-83e8e9b7cf58" class="">
+</p><p id="eecf4a90-ac86-41c6-9b5e-68ebdcf347a9" class="">
+</p><p id="d22af639-0f05-4fa6-8a84-bf1acc7bbe42" class="">And who is responsible for all this?</p><figure id="9b888b37-3bd9-4bf9-b4f5-7c54df8af538" class="image"><a href="epsilonfruit/Untitled%2027.png"><img style="width:411px" src="epsilonfruit/Untitled%2027.png"/></a></figure><p id="1057efa3-f8b1-43d3-a3a8-baa5620cea8a" class="">
+</p><p id="60413173-9134-439d-82c1-3e164350ae6f" class="">Is the profile photo real? Not really, it’s on Pinterest</p><figure id="504e4481-f54a-442f-b7dd-348d256142de" class="image"><a href="epsilonfruit/Untitled%2028.png"><img style="width:193px" src="epsilonfruit/Untitled%2028.png"/></a></figure><p id="1441a23e-2280-4254-b97a-157768c872bb" class="">
+</p><p id="3ad2c9c6-d880-4b54-a40b-ea48d35f3625" class="">
+</p><p id="ac26577d-d6d5-490b-bf22-140338d45847" class="">
+</p><p id="ab1f5e1a-02ed-4756-b9ca-d8fa8b86a577" class="">This is all I have for now. I will update this file as I research more. At the moment, I have issued a complaint to the Telegram group, the hosting provider, the domain provider, and Cloudflare, as well as Discord.</p><p id="fe4804f6-2fb4-4909-8046-012e99b303f3" class="">
+</p><p id="41ecef01-0e49-4f9e-a4d2-02378f710d05" class="">Below I leave a link to the sample files in case you want to investigate on your own. Keep in mind that they are viruses, so treat them with care and in a controlled space.</p><p id="bf23fb75-255f-462e-92b0-d4ddad011690" class="">Password: b4sicallyf0x</p><p id="17aef1db-87e9-4163-84f9-3c0880f0777e" class=""><a href="https://workupload.com/file/4fU2HnhnGyw">EpsilonVirusSamples.zip (workupload.com)</a></p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
